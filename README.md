@@ -53,7 +53,7 @@ ionic_liquid_Na-Pyr13-TFSI/
 ├── simulation_input/
 │   ├── input_file/
 |      ├── il.ff
-|      ├── c3c1pyr.zmat
+|      ├── c3c1pyrr.zmat
 |      ├── Na.zmat
 |      ├── ntf2.zmat
 |   ├── script/
