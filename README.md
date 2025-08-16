@@ -49,26 +49,19 @@ Simulations were performed on the [High Performance Computing (HPC) at BRIN](htt
 ## Repository Structure
 ```
 ionic_liquid_Na-Pyr13-TFSI/
-├── README.md
-├── LICENSE
 │
 ├── simulation_input/
-│   ├── README.md
 │   ├── input_file/
-|      ├── LICENSE
 |      ├── il.ff
 |      ├── c3c1pyr.zmat
 |      ├── Na.zmat
 |      ├── ntf2.zmat
 |   ├── script/
-|      ├── README.md
-|      ├── LICENSE
 |      ├── fftool
 |      ├── mdp_file/
 |         └── ...
 |
 ├── simulation_output/
-|   ├── README.md   
 |   ├── NPT_Production/
 |      └── ...   
 |   ├── NVT_Production/
@@ -76,7 +69,6 @@ ionic_liquid_Na-Pyr13-TFSI/
 
 │
 ├── analysis/
-│   ├── README.md
 |   ├── script/
 |      └── ...
 │   ├── RDF/
@@ -87,5 +79,4 @@ ionic_liquid_Na-Pyr13-TFSI/
 |      └── ...
 │
 └── docs/
-    └── README.md
 ```
