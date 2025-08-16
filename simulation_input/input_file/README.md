@@ -1,6 +1,6 @@
-# Simulation Input
+# Input Files
 
-This folder contains input files used for the simulations from **CL&P**.  
+This folder contains initial input files used to build box simulation.  
 
 ## Source / Attribution
 
