@@ -8,6 +8,18 @@ Simulations were performed on the [High Performance Computing (HPC) at BRIN](htt
 
 ## Requirements
 
+### Materials / Force Field
+- [CL&P Force Field](https://github.com/paduagroup/clandp) – Force field for ionic liquids from Padua Group
+
+### Simulation Software
+- [GROMACS](https://www.gromacs.org) – Molecular dynamics simulation software
+- [FFTool](https://github.com/paduagroup/fftool) – Tool for generating initial configurations and force field parameters
+- [Packmol](http://www.ime.unicamp.br/~martinez/packmol/) – Tool for building initial molecular boxes
+
+### Scripting / Analysis
+- [Python](https://www.python.org) – Programming language
+  - NumPy – Numerical computations
+
 
 ## Simulation Overview
 - **Ionic liquids**: Na-TFSI and Pyr13-TFSI  
@@ -25,7 +37,7 @@ Simulations were performed on the [High Performance Computing (HPC) at BRIN](htt
   
   ### Analysis Performed
 - From **NPT Production**:
-  - Density calculation
+  - Density
   - Box size
 
 - From **NVT Production**:
