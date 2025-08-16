@@ -16,23 +16,64 @@ Simulations were performed on the [High Performance Computing (HPC) at BRIN](htt
 
 ### Simulation Workflow
 1. **Box Volume Determination**
-   - Energy minimization
-   - Annealing
-   - NVT Equilibration
-   - NPT Equilibration
-   - NPT Equilibration cont.
-   - NPT Production
-2. **Production NVT**
-   - Uses volume obtained from Production NPT
-   - EM → Annealing → Equilibration NVT → Production NVT  
+   - Energy Minimization → Annealing → NVT Equilibration → NPT Equilibration → NPT Equilibration cont → NPT Production
+
+3. **Production NVT**
+   - Uses volume obtained from NPT Production
+   - Energy Minimization → Annealing → NVT Equilibration → Production NVT  
    - Repeated **3 times** for statistical reliability
   
   ### Analysis Performed
 - From **NPT Production**:
   - Density calculation
+  - Box size
 
 - From **NVT Production**:
   - Radial Distribution Function (RDF)
   - Mean Squared Displacement (MSD)
   - Diffusion coefficient (from MSD)
-  - Ionic conductivity
+  - Ionic Conductivity
+    
+## Repository Structure
+```
+ionic_liquid_Na-Pyr13-TFSI/
+├── README.md
+├── LICENSE
+│
+├── simulation_input/
+│   ├── README.md
+│   ├── input_file/
+|      ├── LICENSE
+|      ├── il.ff
+|      ├── c3c1pyr.zmat
+|      ├── Na.zmat
+|      ├── ntf2.zmat
+|   ├── script/
+|      ├── README.md
+|      ├── LICENSE
+|      ├── fftool
+|      ├── mdp_file/
+|         └── ...
+|
+├── simulation_output/
+|   ├── README.md   
+|   ├── NPT_Production/
+|      └── ...   
+|   ├── NVT_Production/
+|      └── ...
+
+│
+├── analysis/
+│   ├── README.md
+|   ├── script/
+|      └── ...
+│   ├── RDF/
+|      └── ...
+|   ├── MSD/
+|      └── ...
+|   ├── Conductivity/
+|      └── ...
+│
+└── docs/
+    └── README.md
+```
