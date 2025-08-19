@@ -1,4 +1,4 @@
-SIMULATION INTRUCTION
+SIMULATION INSTRUCTION
 =============================
 A. NPT Production
 =============================
@@ -85,6 +85,10 @@ STEP 2. Generates initial configurations using Packmol
 
     
     </details>
+    
+    > 💡 Note: On HPC systems, you only need to load the required software (Packmol) **once per session**.  
+    > If you log out or start a new session, you need to load it again before running the commands.
+
 
   - generates initial configurations
     ```
@@ -260,7 +264,7 @@ STEP 3. Generates input file for Gromacs
 STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
 --------
 - **files** : `config.pdb`
-- **script** : [GROMACS](https://www.gromacs.org)
+- **software** : [GROMACS](https://www.gromacs.org)
 - **command** :
   - search module
     ```
@@ -305,8 +309,11 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
 
     </pre>
     </details>
+ 
+    > 💡 Note: On HPC systems, you only need to load the required software (Gromacs) **once per session**.  
+    > If you log out or start a new session, you need to load it again before running the commands.
 
-    - Convert the .pdb to .gro format
+  - Convert the .pdb to .gro format
     ```
     gmx_mpi editconf -f <file.pdb> -o <file.gro>
     ```
@@ -332,11 +339,12 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
   </pre>
   </details>
 
+- **output file** :`config.gro`
 ---
 
 A.2. Charge Scaling
 --------
- **files** : `field.top`
+- **files** : `field.top`
 - **script** : [charge_scaling.py](simulation_input/script/charge_scaling)
 - **command** : replace placeholders with scaling factor
   ```
@@ -361,3 +369,34 @@ A.2. Charge Scaling
     </pre>
     
     </details>
+
+  - **output file** : `field_scaled_0.7000.top`
+  
+  ---
+
+A.3 Energy Minimization
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+  
+STEP 1. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `config.gro`, `field_scaled_0.7000.top`, `em.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f em.mdp -p field_scaled_0.7000.top -c config.gro -o em.tpr
+  ```
+- **output file** : `em.tpr`
+
+STEP 2. Running the Energy Minimization
+-------
+- **files** : `em.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm em
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
