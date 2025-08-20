@@ -9,8 +9,22 @@ A.1. Build Box Simulation
 STEP 1. Generates input file for Packmol using fftool
 --------
 
-- **files** : [Na.zmat](simulation_input/input_file/Na.zmat) , [c3c1pyrr.zmat](simulation_input/input_file/c3c1pyrr.zmat), [ntf2.zmat](simulation_input/input_file/ntf2.zmat), and [il.ff](simulation_input/input_file/il.ff)
-- **script** : [fftool](simulation_input/script/FFTool)
+- **files** : [Na.zmat](input_file/Na.zmat) , [c3c1pyrr.zmat](input_file/c3c1pyrr.zmat), [ntf2.zmat](input_file/ntf2.zmat), and [il.ff](input_file/il.ff)
+- **script** : [fftool](script/FFTool)
+  <details>
+    <summary><em>brief overview</em></summary>
+      
+    <ul>
+      <li>.zmat files → molecular structures in z-matrix format (atom positions defined by bond lengths, angles, and dihedrals), used to build initial molecules.</li>
+      <li>il.ff file → a database of force field parameters for ions of various ionic liquids, including atom types, charges, bond lengths, angles, dihedrals, and van der Waals interactions</li>
+      <li>fftool → generates initial molecular structures from z-matrix and force field files, prepares input for Packmol to construct a simulation box, and from the resulting simulation box, generates input files suitable for simulations (specifically GROMACS)</li>
+    </ul>
+
+    
+
+      
+    
+    </details>
 - **command** : replace placeholders with the number of ions*
   ```
   ./fftool <n_Na> Na.zmat <n_pyr13> c3c1pyrr.zmat <n_TFSI> ntf2.zmat -r 1.5
@@ -20,7 +34,7 @@ STEP 1. Generates input file for Packmol using fftool
   ./fftool 19 Na.zmat 171 c3c1pyrr.zmat 190 ntf2.zmat -r 1.5 
   ```
   <details>
-  <summary>expected terminal output</summary>
+  <summary><em>expected terminal output</em></summary>
     
   <pre>
     density 1.500 mol/L  volume 420679.7 A^3
@@ -49,7 +63,7 @@ STEP 2. Generates initial configurations using Packmol
     ```
 
     <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
         
       <pre>
     ------------------------------------------------------- /mgpfs/apps/modulefiles -------------------------------------------------------
@@ -75,7 +89,7 @@ STEP 2. Generates initial configurations using Packmol
     module list
     ```
     <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
       
     <pre>
     Currently Loaded Modules:
@@ -95,7 +109,7 @@ STEP 2. Generates initial configurations using Packmol
     packmol < pack.inp
     ```
       <details>
-      <summary>expected terminal output</summary>
+      <summary><em>expected terminal output</em></summary>
       
       <pre>
         ################################################################################
@@ -234,8 +248,8 @@ STEP 2. Generates initial configurations using Packmol
 
 STEP 3. Generates input file for Gromacs
 --------
-- **files** : `simbox.xyz`, [Na.zmat](simulation_input/input_file/Na.zmat) , [c3c1pyrr.zmat](simulation_input/input_file/c3c1pyrr.zmat), [ntf2.zmat](simulation_input/input_file/ntf2.zmat), and [il.ff](simulation_input/input_file/il.ff)
-- **script** : [fftool](simulation_input/script/FFTool)
+- **files** : `simbox.xyz`, [Na.zmat](input_file/Na.zmat) , [c3c1pyrr.zmat](input_file/c3c1pyrr.zmat), [ntf2.zmat](input_file/ntf2.zmat), and [il.ff](input_file/il.ff)
+- **script** : [fftool](script/FFTool)
 - **command** : replace placeholders with the number of ions*
   ```
   ./fftool <n_Na> Na.zmat <n_pyr13> c3c1pyrr.zmat <n_TFSI> ntf2.zmat -r 1.5 -g
@@ -245,7 +259,7 @@ STEP 3. Generates input file for Gromacs
   ./fftool 19 Na.zmat 171 c3c1pyrr.zmat 190 ntf2.zmat -r 1.5 -g
   ```
   <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
     
   <pre>
   density 1.500 mol/L  volume 420679.7 A^3
@@ -271,7 +285,7 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
     module avail gromacs
     ```
     <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
       
     <pre>
     ------------------------------------------------------- /mgpfs/apps/modulefiles -------------------------------------------------------
@@ -299,7 +313,7 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
     module list
     ```
     <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
       
     <pre>
     Currently Loaded Modules:
@@ -322,7 +336,7 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
   gmx_mpi editconf -f config.pdb -o config.gro
   ```
   <details>
-  <summary>expected terminal output</summary>
+  <summary><em>expected terminal output</em></summary>
       
   <pre>
   Command line:
@@ -345,7 +359,7 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
 A.2. Charge Scaling
 --------
 - **files** : `field.top`
-- **script** : [charge_scaling.py](simulation_input/script/charge_scaling)
+- **script** : [charge_scaling.py](script/charge_scaling)
 - **command** : replace placeholders with scaling factor
   ```
   python3 scaling.py field.top <scaling_factor>
@@ -356,7 +370,7 @@ A.2. Charge Scaling
     python3 scaling.py field.top 0.70
     ```
    <details>
-    <summary>expected terminal output</summary>
+    <summary><em>expected terminal output</em></summary>
       
     <pre>
     Reading input file: field.top
@@ -398,5 +412,41 @@ STEP 2. Running the Energy Minimization
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script**
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J em
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm em
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth em.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `em.edr`, `em.gro`,`em.log`, and `em.trr`
+
+  
 
 
