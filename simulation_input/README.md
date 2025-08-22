@@ -554,7 +554,7 @@ STEP 2. Running the NVT Equilibration
     ```
     #!/bin/bash
   
-    #SBATCH -J em
+    #SBATCH -J eq_nvt
     #SBATCH --nodes=1
     #SBATCH --ntasks=64
     #SBATCH --partition=short
@@ -613,7 +613,7 @@ STEP 2. Running the NPT Equilibration
     ```
     #!/bin/bash
   
-    #SBATCH -J em
+    #SBATCH -J eq_npt
     #SBATCH --nodes=1
     #SBATCH --ntasks=64
     #SBATCH --partition=short
@@ -641,6 +641,126 @@ STEP 2. Running the NPT Equilibration
     ```
   - **output files** : `.err` and `.out`
 - **output files** : `eq_npt.edr`, `eq_npt.gro`,`eq_npt.log`, and `eq_npt.trr`
+
+A.7 NPT Equilibration cont.
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+  
+STEP 1. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `eq_npt.gro`, `field_scaled_0.7000.top`, `eq_npt_cont.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f eq_npt_cont.mdp -p field_scaled_0.7000.top -c eq_npt.gro -o eq_npt_cont.tpr
+  ```
+- **output file** : `eq_npt_cont.tpr`
+
+STEP 2. Running the NPT Equilibration cont.
+-------
+- **files** : `eq_npt_cont.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm eq_npt_cont
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script** `eq_npt_cont.sh`
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J eq_npt_cont
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm eq_npt_cont
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth eq_npt_cont.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `eq_npt_cont.edr`, `eq_npt_cont.gro`,`eq_npt_cont.log`, and `eq_npt_cont.trr`
+
+A.8 NPT Production
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+  
+STEP 1. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `eq_npt_cont.gro`, `field_scaled_0.7000.top`, `prod_npt.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f prod_npt.mdp -p field_scaled_0.7000.top -c eq_npt_cont.gro -o prod_npt.tpr
+  ```
+- **output file** : `prod_npt.tpr`
+
+STEP 2. Running the NPT Production
+-------
+- **files** : `prod_npt.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm prod_npt
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script** `prod_npt.sh`
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J prod_npt
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm prod_npt
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth prod_npt.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `prod_npt.edr`, `prod_npt.gro`,`prod_npt.log`, and `prod_npt.trr`
+
+
 
 
   
