@@ -414,7 +414,7 @@ STEP 2. Running the Energy Minimization
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
 
 
-  - **Slurm batch script**
+  - **Slurm batch script** `em.sh`
     ```
     #!/bin/bash
   
@@ -446,6 +446,202 @@ STEP 2. Running the Energy Minimization
     ```
   - **output files** : `.err` and `.out`
 - **output files** : `em.edr`, `em.gro`,`em.log`, and `em.trr`
+
+A.4 Annealing
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+
+STEP 1. Create an index file for annealing
+--------
+- **files** : `em.tpr`
+- **command** :
+  ```
+  gmx_mpi make_ndx -f em.tpr -o em.ndx
+  ```
+  <details>
+  <summary><em>expected terminal output</em></summary>
+    
+  <pre>
+  Lorem ipsum
+  </pre>
+  
+  </details>
+
+- **output file** : `em.ndx`
+  
+STEP 2. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `em.gro`, `em.ndx`, `field_scaled_0.7000.top`, `an.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f an.mdp -p field_scaled_0.7000.top -c em.gro -n em.ndx -o an.tpr
+  ```
+- **output file** : `an.tpr`
+
+STEP 3. Running the Annealing
+-------
+- **files** : `an.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm an
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script** `an.sh`
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J an
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm an
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth an.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `an.edr`, `an.gro`,`an.log`, and `an.trr`
+
+A.5 NVT Equilibration
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+  
+STEP 1. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `an.gro`, `field_scaled_0.7000.top`, `eq_nvt.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f eq_nvt.mdp -p field_scaled_0.7000.top -c an.gro -o eq_nvt.tpr
+  ```
+- **output file** : `eq_nvt.tpr`
+
+STEP 2. Running the NVT Equilibration
+-------
+- **files** : `eq_nvt.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm eq_nvt
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script** `eq_nvt.sh`
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J em
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm eq_nvt
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth em.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `eq_nvt.edr`, `eq_nvt.gro`,`eq_nvt.log`, and `eq_nvt.trr`
+
+A.6 NPT Equilibration
+--------
+- **software** : [GROMACS](https://www.gromacs.org)
+  
+STEP 1. Gromacs Preprocessor / Input Preparation
+--------
+- **files** : `eq_nvt.gro`, `field_scaled_0.7000.top`, `eq_npt.mdp`
+- **command** :
+
+  ```
+  gmx_mpi grompp -f eq_npt.mdp -p field_scaled_0.7000.top -c eq_nvt.gro -o eq_npt.tpr
+  ```
+- **output file** : `eq_npt.tpr`
+
+STEP 2. Running the NPT Equilibration
+-------
+- **files** : `eq_npt.tpr`
+- **command** :
+
+  ```
+  gmx_mpi mdrun -v -deffnm eq_npt
+  ```
+  > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
+  > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
+
+
+  - **Slurm batch script** `eq_npt.sh`
+    ```
+    #!/bin/bash
+  
+    #SBATCH -J em
+    #SBATCH --nodes=1
+    #SBATCH --ntasks=64
+    #SBATCH --partition=short
+    
+    #SBATCH -o out_%j.out
+    #SBATCH -e err_%j.err
+    
+    module load openmpi4/4.1.4
+    module load bioinformatics/gromacs/2023.3-mpi
+    
+    
+    export OMP_NUM_THREADS=64
+    
+    date
+    
+    gmx_mpi mdrun -v -deffnm eq_npt
+    
+    date
+  
+    ```
+  
+  - **command** :
+    ```
+    sbacth eq_npt.sh
+    ```
+  - **output files** : `.err` and `.out`
+- **output files** : `eq_npt.edr`, `eq_npt.gro`,`eq_npt.log`, and `eq_npt.trr`
+
 
   
 
