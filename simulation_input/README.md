@@ -1,29 +1,80 @@
-SIMULATION INSTRUCTION
-=============================
-A. NPT Production
-=============================
+<div align="center">
 
-A.1. Build Box Simulation
+# WORKFLOW
+
+```mermaid
+graph TB
+    %% Left branch - NPT Equilibration
+    L1([⚛ Build Box Simulation ])
+    L2([⚛ Charge Scaling])
+    L3([⚛ Energy Minimization])
+    L4([⚛ Annealing])
+    L5([⚛ NVT Equilibration])
+    L6([⚛ NPT Equilibration])
+    L7([⚛ NPT Equilibration cont.])
+    L8([⚛ NPT Production])
+    L9([📊 Analysis])
+    L10([📈Density])
+    L11([📈Box Size])
+    
+
+    %% Right branch - NVT Equilibration
+    R1([📈Box Size])
+    R2([⚛ Build Box Simulation])
+    R3([⚛ Charge Scaling])
+    R4([⚛ Energy Minimization])
+    R5([⚛ Annealing])
+    R6([⚛ NVT Equilibration])
+    R7([⚛ NVT Production])
+    R8([📊 Analysis])
+    R9([📈 Ionic Conductivity])
+    R10([📈RDF])
+    R11([📈MSD])
+
+    %% Connections
+    L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7 --> L8 --> L9
+    L9 --> L10
+    L9 --> L11
+    
+
+    R1 --> R2 --> R3 --> R4 --> R5 --> R6 -->R7--> R8
+    R8 --> R9
+    R8 --> R10
+    R8 --> R11
+```
+
+</div>
+
+
+
+
+
+
 --------
-
-STEP 1. Generates input file for Packmol using fftool
 --------
+<div align="center">
 
+# SIMULATION
+
+</div>
+
+
+
+
+## A. NPT Production
+### A.1. Build Box Simulation
+
+
+**STEP 1. Generates input file for Packmol using fftool**
 - **files** : [Na.zmat](input_file/Na.zmat) , [c3c1pyrr.zmat](input_file/c3c1pyrr.zmat), [ntf2.zmat](input_file/ntf2.zmat), and [il.ff](input_file/il.ff)
 - **script** : [fftool](script/FFTool)
   <details>
     <summary><em>brief overview</em></summary>
-      
     <ul>
       <li>.zmat files → molecular structures in z-matrix format (atom positions defined by bond lengths, angles, and dihedrals), used to build initial molecules.</li>
       <li>il.ff file → a database of force field parameters for ions of various ionic liquids, including atom types, charges, bond lengths, angles, dihedrals, and van der Waals interactions</li>
-      <li>fftool → generates initial molecular structures from z-matrix and force field files, prepares input for Packmol to construct a simulation box, and from the resulting simulation box, generates input files suitable for simulations (specifically GROMACS)</li>
-    </ul>
-
-    
-
-      
-    
+      <li>fftool → generates initial molecular structures from z-matrix and force field files (il.ff), prepares input for Packmol to construct a simulation box, and from the resulting simulation box, generates input files suitable for simulations (specifically GROMACS)</li>
+    </ul>    
     </details>
 - **command** : replace placeholders with the number of ions*
   ```
@@ -35,7 +86,6 @@ STEP 1. Generates input file for Packmol using fftool
   ```
   <details>
   <summary><em>expected terminal output</em></summary>
-    
   <pre>
     density 1.500 mol/L  volume 420679.7 A^3
     molecule_file      species           nmol force_field      natom nbond source  charge
@@ -45,15 +95,11 @@ STEP 1. Generates input file for Packmol using fftool
     packmol file
     pack.inp
   </pre>
-  
   </details>
+- **output file** : `pack.inp`
 
 
-- **output file** : `pack.inp` (input for packmol)
-
-
-STEP 2. Generates initial configurations using Packmol
---------
+**STEP 2. Generates initial configurations using Packmol**
 - **files** : `pack.inp`
 - **software** : [Packmol](http://www.ime.unicamp.br/~martinez/packmol/)
 - **command** :
@@ -61,10 +107,8 @@ STEP 2. Generates initial configurations using Packmol
     ```
     module avail packmol
     ```
-
     <details>
     <summary><em>expected terminal output</em></summary>
-        
       <pre>
     ------------------------------------------------------- /mgpfs/apps/modulefiles -------------------------------------------------------
      nuclear/packmol/20.14.4
@@ -76,10 +120,8 @@ STEP 2. Generates initial configurations using Packmol
   
     Use "module spider" to find all possible modules and extensions.
     Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
-  
       </pre>
       </details>
-
   - load module
     ```
     module load nuclear/packmol/20.14.4
@@ -90,27 +132,21 @@ STEP 2. Generates initial configurations using Packmol
     ```
     <details>
     <summary><em>expected terminal output</em></summary>
-      
     <pre>
-    Currently Loaded Modules:
-    1) prun/2.2       3) hwloc/2.7.0   5) libfabric/1.13.0   7) singularity/3.7.1   9) readline/8.2
-    2) gnu12/12.2.0   4) ucx/1.14.0    6) openmpi4/4.1.4     8) ohpc               10) nuclear/packmol/20.14.4
+      Currently Loaded Modules:
+      1) prun/2.2       3) hwloc/2.7.0   5) libfabric/1.13.0   7) singularity/3.7.1   9) readline/8.2
+      2) gnu12/12.2.0   4) ucx/1.14.0    6) openmpi4/4.1.4     8) ohpc               10) nuclear/packmol/20.14.4
     </pre>
-
-    
     </details>
-    
+
     > 💡 Note: On HPC systems, you only need to load the required software (Packmol) **once per session**.  
     > If you log out or start a new session, you need to load it again before running the commands.
-
-
   - generates initial configurations
     ```
     packmol < pack.inp
     ```
       <details>
       <summary><em>expected terminal output</em></summary>
-      
       <pre>
         ################################################################################
         
@@ -246,8 +282,8 @@ STEP 2. Generates initial configurations using Packmol
       </details>
 - **output file** : `simbox.xyz`, `c3c1pyrr_pack.xyz`, `ntf2_pack.xyz`, `Na_pack.xyz`
 
-STEP 3. Generates input file for Gromacs
---------
+
+**STEP 3. Generates input file for Gromacs**
 - **files** : `simbox.xyz`, [Na.zmat](input_file/Na.zmat) , [c3c1pyrr.zmat](input_file/c3c1pyrr.zmat), [ntf2.zmat](input_file/ntf2.zmat), and [il.ff](input_file/il.ff)
 - **script** : [fftool](script/FFTool)
 - **command** : replace placeholders with the number of ions*
@@ -260,7 +296,6 @@ STEP 3. Generates input file for Gromacs
   ```
   <details>
     <summary><em>expected terminal output</em></summary>
-    
   <pre>
   density 1.500 mol/L  volume 420679.7 A^3
   molecule_file      species           nmol force_field      natom nbond source  charge
@@ -275,8 +310,8 @@ STEP 3. Generates input file for Gromacs
   </details>
 - **output file** : `run.mdp`, `field.top`, and `config.pdb`
 
-STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
---------
+
+**STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file**
 - **files** : `config.pdb`
 - **software** : [GROMACS](https://www.gromacs.org)
 - **command** :
@@ -286,7 +321,6 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
     ```
     <details>
     <summary><em>expected terminal output</em></summary>
-      
     <pre>
     ------------------------------------------------------- /mgpfs/apps/modulefiles -------------------------------------------------------
        bioinformatics/gromacs/2023-plumed-mpi    bioinformatics/gromacs/2023-plumed    bioinformatics/gromacs/2023.3-mpi (D)
@@ -303,7 +337,6 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
     Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
     </pre>
     </details>
-  
   - module load
     ```
     module load bioinformatics/gromacs/2023.3-mpi
@@ -314,19 +347,16 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
     ```
     <details>
     <summary><em>expected terminal output</em></summary>
-      
     <pre>
     Currently Loaded Modules:
       1) prun/2.2       4) ucx/1.14.0         7) singularity/3.7.1  10) mpi/2021.10.0      13) bioinformatics/plumed/2.9.0
       2) gnu12/12.2.0   5) libfabric/1.13.0   8) ohpc               11) fftw/3.3.8-shared  14) bioinformatics/gromacs/2023.3-mpi
       3) hwloc/2.7.0    6) openmpi4/4.1.4     9) python/3.9.16      12) gcc/12.2.0
-
     </pre>
     </details>
  
     > 💡 Note: On HPC systems, you only need to load the required software (Gromacs) **once per session**.  
     > If you log out or start a new session, you need to load it again before running the commands.
-
   - Convert the .pdb to .gro format
     ```
     gmx_mpi editconf -f <file.pdb> -o <file.gro>
@@ -337,7 +367,6 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
   ```
   <details>
   <summary><em>expected terminal output</em></summary>
-      
   <pre>
   Command line:
     gmx editconf -f config.pdb -o config.gro
@@ -349,29 +378,25 @@ STEP 4. Convert the PDB structure into a GROMACS-compatible GRO file
   No velocities found
   
   GROMACS reminds you: "A C program is like a fast dance on a newly waxed dance floor by people carrying razors." (Waldi Ravens)
-
   </pre>
   </details>
-
 - **output file** :`config.gro`
----
 
-A.2. Charge Scaling
---------
+
+
+### A.2. Charge Scaling
 - **files** : `field.top`
 - **script** : [charge_scaling.py](script/charge_scaling)
 - **command** : replace placeholders with scaling factor
   ```
   python3 scaling.py field.top <scaling_factor>
   ```
-  
 - **example**
     ```
     python3 scaling.py field.top 0.70
     ```
    <details>
     <summary><em>expected terminal output</em></summary>
-      
     <pre>
     Reading input file: field.top
     Scaling charges with factor: 0.7
@@ -381,19 +406,16 @@ A.2. Charge Scaling
     Writing scaled output to: field_scaled_0.7000.top
     Done!
     </pre>
-    
     </details>
 
   - **output file** : `field_scaled_0.7000.top`
   
-  ---
 
-A.3 Energy Minimization
---------
+
+### A.3 Energy Minimization
 - **software** : [GROMACS](https://www.gromacs.org)
-  
-STEP 1. Gromacs Preprocessor / Input Preparation
---------
+
+**STEP 1. Gromacs Preprocessor / Input Preparation**
 - **files** : `config.gro`, `field_scaled_0.7000.top`, `em.mdp`
 - **command** :
 
@@ -402,8 +424,7 @@ STEP 1. Gromacs Preprocessor / Input Preparation
   ```
 - **output file** : `em.tpr`
 
-STEP 2. Running the Energy Minimization
--------
+**STEP 2. Running the Energy Minimization**
 - **files** : `em.tpr`
 - **command** :
 
@@ -412,7 +433,6 @@ STEP 2. Running the Energy Minimization
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
 
   - **Slurm batch script** `em.sh`
     ```
@@ -439,7 +459,6 @@ STEP 2. Running the Energy Minimization
     date
   
     ```
-  
   - **command** :
     ```
     sbacth em.sh
@@ -447,12 +466,12 @@ STEP 2. Running the Energy Minimization
   - **output files** : `.err` and `.out`
 - **output files** : `em.edr`, `em.gro`,`em.log`, and `em.trr`
 
-A.4 Annealing
---------
+
+
+### A.4 Annealing
 - **software** : [GROMACS](https://www.gromacs.org)
 
-STEP 1. Create an index file for annealing
---------
+**STEP 1. Create an index file for annealing**
 - **files** : `em.tpr`
 - **command** :
   ```
@@ -460,37 +479,31 @@ STEP 1. Create an index file for annealing
   ```
   <details>
   <summary><em>expected terminal output</em></summary>
-    
   <pre>
   Lorem ipsum
   </pre>
-  
   </details>
 
 - **output file** : `em.ndx`
   
-STEP 2. Gromacs Preprocessor / Input Preparation
---------
+
+**STEP 2. Gromacs Preprocessor / Input Preparation**
 - **files** : `em.gro`, `em.ndx`, `field_scaled_0.7000.top`, `an.mdp`
 - **command** :
-
   ```
   gmx_mpi grompp -f an.mdp -p field_scaled_0.7000.top -c em.gro -n em.ndx -o an.tpr
   ```
 - **output file** : `an.tpr`
 
-STEP 3. Running the Annealing
--------
+
+**STEP 3. Running the Annealing**
 - **files** : `an.tpr`
 - **command** :
-
   ```
   gmx_mpi mdrun -v -deffnm an
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
-
   - **Slurm batch script** `an.sh`
     ```
     #!/bin/bash
@@ -516,7 +529,6 @@ STEP 3. Running the Annealing
     date
   
     ```
-  
   - **command** :
     ```
     sbacth an.sh
@@ -524,32 +536,29 @@ STEP 3. Running the Annealing
   - **output files** : `.err` and `.out`
 - **output files** : `an.edr`, `an.gro`,`an.log`, and `an.trr`
 
-A.5 NVT Equilibration
---------
+
+
+### A.5 NVT Equilibration
+
 - **software** : [GROMACS](https://www.gromacs.org)
   
-STEP 1. Gromacs Preprocessor / Input Preparation
---------
+**STEP 1. Gromacs Preprocessor / Input Preparation**
 - **files** : `an.gro`, `field_scaled_0.7000.top`, `eq_nvt.mdp`
 - **command** :
-
   ```
   gmx_mpi grompp -f eq_nvt.mdp -p field_scaled_0.7000.top -c an.gro -o eq_nvt.tpr
   ```
 - **output file** : `eq_nvt.tpr`
 
-STEP 2. Running the NVT Equilibration
--------
+
+**STEP 2. Running the NVT Equilibration**
 - **files** : `eq_nvt.tpr`
 - **command** :
-
   ```
   gmx_mpi mdrun -v -deffnm eq_nvt
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
-
   - **Slurm batch script** `eq_nvt.sh`
     ```
     #!/bin/bash
@@ -575,7 +584,6 @@ STEP 2. Running the NVT Equilibration
     date
   
     ```
-  
   - **command** :
     ```
     sbacth em.sh
@@ -583,32 +591,28 @@ STEP 2. Running the NVT Equilibration
   - **output files** : `.err` and `.out`
 - **output files** : `eq_nvt.edr`, `eq_nvt.gro`,`eq_nvt.log`, and `eq_nvt.trr`
 
-A.6 NPT Equilibration
---------
+
+
+### A.6 NPT Equilibration
 - **software** : [GROMACS](https://www.gromacs.org)
   
-STEP 1. Gromacs Preprocessor / Input Preparation
---------
+**STEP 1. Gromacs Preprocessor / Input Preparation**
 - **files** : `eq_nvt.gro`, `field_scaled_0.7000.top`, `eq_npt.mdp`
 - **command** :
-
   ```
   gmx_mpi grompp -f eq_npt.mdp -p field_scaled_0.7000.top -c eq_nvt.gro -o eq_npt.tpr
   ```
 - **output file** : `eq_npt.tpr`
 
-STEP 2. Running the NPT Equilibration
--------
+
+**STEP 2. Running the NPT Equilibration**
 - **files** : `eq_npt.tpr`
 - **command** :
-
   ```
   gmx_mpi mdrun -v -deffnm eq_npt
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
-
   - **Slurm batch script** `eq_npt.sh`
     ```
     #!/bin/bash
@@ -634,7 +638,6 @@ STEP 2. Running the NPT Equilibration
     date
   
     ```
-  
   - **command** :
     ```
     sbacth eq_npt.sh
@@ -642,32 +645,28 @@ STEP 2. Running the NPT Equilibration
   - **output files** : `.err` and `.out`
 - **output files** : `eq_npt.edr`, `eq_npt.gro`,`eq_npt.log`, and `eq_npt.trr`
 
-A.7 NPT Equilibration cont.
---------
+
+
+### A.7 NPT Equilibration cont.
 - **software** : [GROMACS](https://www.gromacs.org)
-  
-STEP 1. Gromacs Preprocessor / Input Preparation
---------
+
+**STEP 1. Gromacs Preprocessor / Input Preparation**
 - **files** : `eq_npt.gro`, `field_scaled_0.7000.top`, `eq_npt_cont.mdp`
 - **command** :
-
   ```
   gmx_mpi grompp -f eq_npt_cont.mdp -p field_scaled_0.7000.top -c eq_npt.gro -o eq_npt_cont.tpr
   ```
 - **output file** : `eq_npt_cont.tpr`
 
-STEP 2. Running the NPT Equilibration cont.
--------
+
+**STEP 2. Running the NPT Equilibration cont.**
 - **files** : `eq_npt_cont.tpr`
 - **command** :
-
   ```
   gmx_mpi mdrun -v -deffnm eq_npt_cont
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
-
   - **Slurm batch script** `eq_npt_cont.sh`
     ```
     #!/bin/bash
@@ -693,7 +692,6 @@ STEP 2. Running the NPT Equilibration cont.
     date
   
     ```
-  
   - **command** :
     ```
     sbacth eq_npt_cont.sh
@@ -701,22 +699,21 @@ STEP 2. Running the NPT Equilibration cont.
   - **output files** : `.err` and `.out`
 - **output files** : `eq_npt_cont.edr`, `eq_npt_cont.gro`,`eq_npt_cont.log`, and `eq_npt_cont.trr`
 
-A.8 NPT Production
---------
+
+
+### A.8 NPT Production
 - **software** : [GROMACS](https://www.gromacs.org)
   
-STEP 1. Gromacs Preprocessor / Input Preparation
---------
+**STEP 1. Gromacs Preprocessor / Input Preparation**
 - **files** : `eq_npt_cont.gro`, `field_scaled_0.7000.top`, `prod_npt.mdp`
 - **command** :
-
   ```
   gmx_mpi grompp -f prod_npt.mdp -p field_scaled_0.7000.top -c eq_npt_cont.gro -o prod_npt.tpr
   ```
 - **output file** : `prod_npt.tpr`
 
-STEP 2. Running the NPT Production
--------
+
+**STEP 2. Running the NPT Production**
 - **files** : `prod_npt.tpr`
 - **command** :
 
@@ -725,8 +722,6 @@ STEP 2. Running the NPT Production
   ```
   > 💡 Note: Running GROMACS simulations (using gmx mdrun) can take a long time  
   > For faster and more convenient execution on HPC systems, it is recommended to run it using SLURM.
-
-
   - **Slurm batch script** `prod_npt.sh`
     ```
     #!/bin/bash
@@ -763,6 +758,56 @@ STEP 2. Running the NPT Production
 
 
 
-  
+--------
+--------
+<div align="center">
+
+#  DATA ANALYSIS
+
+</div>
+
+
+
+## A. NPT Production
+
+### A.1. Box Size
+
+- **files** : `prod_npt.edr`
+- **software** : [GROMACS](https://www.gromacs.org)
+- **command** :
+  ```
+  gmx_mpi energy -f prod_npt.edr -o box_prod_npt.xvg | tee box_mean.txt 
+  ```
+- **output file** : `box_prod_npt.xvg` , `box_mean.txt`
+
+
+### A.2. Density
+- **files** : `prod_npt.edr`
+- **software** : [GROMACS](https://www.gromacs.org)
+- **command** :
+
+  ```
+  gmx_mpi energy -f prod_npt.edr -o density_prod_npt.xvg | tee density_mean.txt 
+  ```
+- **output file** : `density_prod_npt.xvg` , `box_mean.txt`
+
+
+
+--------
+--------
+<div align="center">
+
+#  OPTIONAL
+
+</div>
+ 
+
+
+
+## A. Extend Simulation
+
+
+## B. Trajectory Compression
+
 
 
